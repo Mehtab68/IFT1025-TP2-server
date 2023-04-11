@@ -90,17 +90,54 @@ public class Server {
      La méthode gère les exceptions si une erreur se produit lors de la lecture du fichier ou de l'écriture de l'objet dans le flux.
      @param arg la session pour laquelle on veut récupérer la liste des cours
      */
-    public void handleLoadCourses(String arg) {
-        // TODO: implémenter cette méthode
+public void handleLoadCourses(String arg) {
+    try {
+        BufferedReader reader = new BufferedReader(new FileReader("src/main/java/server/data/cours.txt"));
+        ArrayList<Course> courses = new ArrayList<>();
+        String line;
+        
+        while ((line = reader.readLine()) != null) {
+            String[] parts = line.split("\t");
+            String code = parts[0];
+            String name = parts[1];
+            String session = parts[2];
+            
+            if (session.equalsIgnoreCase(arg)) {
+                courses.add(new Course(name, code, session));
+            }
+        }
+        
+        reader.close();
+        objectOutputStream.writeObject(courses);
+    } catch (IOException e) {
+        e.printStackTrace();
     }
+}
+
 
     /**
      Récupérer l'objet 'RegistrationForm' envoyé par le client en utilisant 'objectInputStream', l'enregistrer dans un fichier texte
      et renvoyer un message de confirmation au client.
      La méthode gére les exceptions si une erreur se produit lors de la lecture de l'objet, l'écriture dans un fichier ou dans le flux de sortie.
      */
-    public void handleRegistration() {
-        // TODO: implémenter cette méthode
+public void handleRegistration() {
+    try {
+        RegistrationForm registrationForm = (RegistrationForm) objectInputStream.readObject();
+
+        String formattedRegistration = String.format("%s\t%s\t%s\t%s\t%s\t%s%n",
+                registrationForm.getCourse().getSession(),
+                registrationForm.getCourse().getCode(),
+                registrationForm.getMatricule(),
+                registrationForm.getPrenom(),
+                registrationForm.getNom(),
+                registrationForm.getEmail());
+
+        Files.write(Paths.get("src/main/java/server/data/inscription.txt"), formattedRegistration.getBytes(), StandardOpenOption.APPEND);
+
+        objectOutputStream.writeObject("Inscription réussie.");
+    } catch (IOException | ClassNotFoundException e) {
+        e.printStackTrace();
     }
 }
+
 
