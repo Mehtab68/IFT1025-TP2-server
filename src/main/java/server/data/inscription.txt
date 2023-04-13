@@ -1,1 +1,3 @@
 Automne	IFT2255	12345678	Michalis	Famelis	mfamelis@iro.umontreal.ca
+Automne IFT1227 2069155     Mehtab-Ali  Rajput  mehtab-ali.rajput@umontreal.ca
+Hiver   IFT1025 -------     Zheng       Qin     -----------------@umontreal.ca

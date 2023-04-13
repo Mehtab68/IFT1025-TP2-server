@@ -109,7 +109,9 @@ public void handleLoadCourses(String arg) {
         
         reader.close();
         objectOutputStream.writeObject(courses);
+        objectOutputStream.flush();
     } catch (IOException e) {
+        System.out.println("Erreur");
         e.printStackTrace();
     }
 }
