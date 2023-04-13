@@ -2,6 +2,7 @@ package server;
 
 import javafx.util.Pair;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -111,6 +112,9 @@ public void handleLoadCourses(String arg) {
         objectOutputStream.writeObject(courses);
         objectOutputStream.flush();
     } catch (IOException e) {
+        System.out.println("Erreur");
+        e.printStackTrace();
+    } catch (FileNotFoundException e) {
         System.out.println("Erreur");
         e.printStackTrace();
     }
