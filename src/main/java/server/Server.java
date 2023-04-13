@@ -104,6 +104,7 @@ public void handleLoadCourses(String arg) {
             String session = parts[2];
             
             if (session.equalsIgnoreCase(arg)) {
+                System.out.println("Course Added : " + parts[0]);
                 courses.add(new Course(name, code, session));
             }
         }
@@ -112,10 +113,10 @@ public void handleLoadCourses(String arg) {
         objectOutputStream.writeObject(courses);
         objectOutputStream.flush();
     } catch (IOException e) {
-        System.out.println("Erreur");
+        System.out.println("Errorr");
         e.printStackTrace();
     } catch (FileNotFoundException e) {
-        System.out.println("Erreur");
+        System.out.println("Errorr");
         e.printStackTrace();
     }
 }
