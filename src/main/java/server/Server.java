@@ -1,6 +1,7 @@
 package server;
 
 import javafx.util.Pair;
+import server.models.Course;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -112,6 +113,7 @@ public void handleLoadCourses(String arg) {
         reader.close();
         objectOutputStream.writeObject(courses);
         objectOutputStream.flush();
+        System.out.println(courses);
     } catch (IOException e) {
         System.out.println("Errorr");
         e.printStackTrace();
@@ -130,6 +132,7 @@ public void handleLoadCourses(String arg) {
 public void handleRegistration() {
     try {
         RegistrationForm registrationForm = (RegistrationForm) objectInputStream.readObject();
+        Course course = registrationForm.getCourse();
 
         String formattedRegistration = String.format("%s\t%s\t%s\t%s\t%s\t%s%n",
                 registrationForm.getCourse().getSession(),
