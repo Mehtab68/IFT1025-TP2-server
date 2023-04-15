@@ -3,14 +3,12 @@ package server;
 import javafx.util.Pair;
 import server.models.Course;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class Server {
 
@@ -94,7 +92,7 @@ public class Server {
      */
 public void handleLoadCourses(String arg) {
     try {
-        BufferedReader reader = new BufferedReader(new FileReader("src/main/java/server/data/cours.txt"));
+        Scanner reader = new Scanner(new File("src/main/java/server/data/cours.txt"));
         ArrayList<Course> courses = new ArrayList<>();
         String line;
         
