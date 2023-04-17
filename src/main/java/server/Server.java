@@ -141,6 +141,7 @@ public void handleLoadCourses(String arg) {
 public void handleRegistration() {
     try {
         RegistrationForm registrationForm = (RegistrationForm) objectInputStream.readObject();
+        FileWriter fileWriter = new FileWriter("src/main/java/server/data/inscription.txt", true);
         Course course = registrationForm.getCourse();
 
         String formattedRegistration = String.format("%s\t%s\t%s\t%s\t%s\t%s%n",
