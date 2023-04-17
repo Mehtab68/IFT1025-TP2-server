@@ -10,6 +10,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
+/**
+ * La classe Server est responsable de la gestion des requêtes des clients
+ * pour charger des cours et enregistrer des inscriptions.
+ * Cette classe doit être exécutée avant de lancer les clients.
+ */
 public class Server {
 
     public final static String REGISTER_COMMAND = "INSCRIRE";
@@ -84,11 +89,13 @@ public class Server {
     }
 
     /**
-     Lire un fichier texte contenant des informations sur les cours et les transofmer en liste d'objets 'Course'.
-     La méthode filtre les cours par la session spécifiée en argument.
-     Ensuite, elle renvoie la liste des cours pour une session au client en utilisant l'objet 'objectOutputStream'.
-     La méthode gère les exceptions si une erreur se produit lors de la lecture du fichier ou de l'écriture de l'objet dans le flux.
-     @param arg la session pour laquelle on veut récupérer la liste des cours
+     * Lire un fichier texte contenant des informations sur les cours et les transofmer en liste d'objets 'Course'.
+     * La méthode filtre les cours par la session spécifiée en argument.
+     * Ensuite, elle renvoie la liste des cours pour une session au client en utilisant l'objet 'objectOutputStream'.
+     * La méthode gère les exceptions si une erreur se produit lors de la lecture du fichier ou de l'écriture de l'objet dans le flux.
+     * @param session La session pour laquelle les cours doivent être chargés
+     * @return Une liste d'objets Course contenant les informations sur les cours pour la session spécifiée
+     * @throws IOException En cas d'erreur lors de la lecture du fichier de cours
      */
 public void handleLoadCourses(String arg) {
     try {
@@ -123,9 +130,13 @@ public void handleLoadCourses(String arg) {
 
 
     /**
-     Récupérer l'objet 'RegistrationForm' envoyé par le client en utilisant 'objectInputStream', l'enregistrer dans un fichier texte
-     et renvoyer un message de confirmation au client.
-     La méthode gére les exceptions si une erreur se produit lors de la lecture de l'objet, l'écriture dans un fichier ou dans le flux de sortie.
+     * Récupérer l'objet 'RegistrationForm' envoyé par le client en utilisant 'objectInputStream', l'enregistrer dans un fichier texte
+     * et renvoyer un message de confirmation au client.
+     * La méthode gére les exceptions si une erreur se produit lors de la lecture de l'objet, l'écriture dans un fichier ou dans le flux de sortie.
+     * @param registrationForm Un objet RegistrationForm contenant les informations d'inscription de l'étudiant
+     * @return Un message de succès ou d'échec de l'inscription
+     * @throws IOException En cas d'erreur lors de l'écriture du fichier d'inscription
+     */
      */
 public void handleRegistration() {
     try {
