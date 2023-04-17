@@ -10,6 +10,13 @@ public class ClientFX extends Application {
         launch(args);
     }
 
+    public final static String REGISTER_COMMAND = "REGISTER";
+
+    private static final String SERVER_ADDRESS = "localhost";
+
+    private static int SERVER_PORT = 1337;
+
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("client_fx.fxml"));
