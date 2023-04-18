@@ -1,6 +1,8 @@
 package server;
 
-import javafx.util.Pair;
+import java.util.AbstractMap;
+import java.util.Map;
+
 import server.models.Course;
 
 import java.io.*;
@@ -9,6 +11,14 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
+
+import server.models.RegistrationForm;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+
+import java.io.FileReader;
+import java.io.BufferedReader;
 
 /**
  * La classe Server est responsable de la gestion des requêtes des clients
@@ -58,21 +68,23 @@ public class Server {
     }
 
     public void listen() throws IOException, ClassNotFoundException {
-        String line;
-        if ((line = this.objectInputStream.readObject().toString()) != null) {
-            Pair<String, String> parts = processCommandLine(line);
-            String cmd = parts.getKey();
-            String arg = parts.getValue();
-            this.alertHandlers(cmd, arg);
+    String line;
+    if ((line = this.objectInputStream.readObject().toString()) != null) {
+        Map.Entry<String, String> parts = processCommandLine(line);
+        String cmd = parts.getKey();
+        String arg = parts.getValue();
+        this.alertHandlers(cmd, arg);
         }
     }
 
-    public Pair<String, String> processCommandLine(String line) {
-        String[] parts = line.split(" ");
-        String cmd = parts[0];
-        String args = String.join(" ", Arrays.asList(parts).subList(1, parts.length));
-        return new Pair<>(cmd, args);
+
+    public AbstractMap.SimpleEntry<String, String> processCommandLine(String line) {
+       String[] parts = line.split(" ");
+       String cmd = parts[0];
+       String args = String.join(" ", Arrays.asList(parts).subList(1, parts.length));
+       return new AbstractMap.SimpleEntry<>(cmd, args);
     }
+
 
     public void disconnect() throws IOException {
         objectOutputStream.close();
@@ -99,36 +111,32 @@ public class Server {
      */
 
 
-    public void handleLoadCourses(String arg) {
-        try {
-            Scanner reader = new Scanner(new File("src/main/java/server/data/cours.txt"));
-            ArrayList<Course> courses = new ArrayList<>();
-            String line;
+     public void handleLoadCourses(String arg) {
+         try (BufferedReader reader = new BufferedReader(new FileReader("src/main/java/server/data/cours.txt"))) {
+              ArrayList<Course> courses = new ArrayList<>();
+              String line;
 
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split("\t");
-                String code = parts[0];
-                String name = parts[1];
-                String session = parts[2];
+              while ((line = reader.readLine()) != null) {
+                  String[] parts = line.split("\t");
+                  String code = parts[0];
+                  String name = parts[1];
+                  String session = parts[2];
 
-                if (session.equalsIgnoreCase(arg)) {
-                    System.out.println("Course Added : " + parts[0]);
-                    courses.add(new Course(name, code, session));
-                }
-            }
+                  if (session.equalsIgnoreCase(arg)) {
+                      System.out.println("Course Added : " + parts[0]);
+                      courses.add(new Course(name, code, session));
+                  }
+              }
 
-            reader.close();
-            objectOutputStream.writeObject(courses);
-            objectOutputStream.flush();
-            System.out.println(courses);
-        } catch (IOException e) {
-            System.out.println("Errorr");
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            System.out.println("Errorr");
-            e.printStackTrace();
-        }
-    }
+              objectOutputStream.writeObject(courses);
+              objectOutputStream.flush();
+              System.out.println(courses);
+          } catch (IOException e) {
+              System.out.println("Errorr");
+              e.printStackTrace();
+          }
+      }
+
 
 
     /**
@@ -163,6 +171,3 @@ public class Server {
         }
     }
 }
-
-
-
