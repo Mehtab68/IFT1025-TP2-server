@@ -5,6 +5,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Scanner;
+import static server.ServerLauncher.SERVER_ADDRESS;
+import static server.ServerLauncher.SERVER_PORT;
 
 public class Client {
     private final String host;
@@ -14,7 +16,7 @@ public class Client {
         this.host = host;
         this.port = port;
     }
-  
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         try (Socket socket = new Socket(SERVER_ADDRESS, SERVER_PORT)) {
