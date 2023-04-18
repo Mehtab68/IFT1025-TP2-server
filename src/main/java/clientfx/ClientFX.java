@@ -22,6 +22,8 @@ public class ClientFX extends Application {
 
     public final static String WINTER_SEMESTER = "Hiver";
 
+    public final static String LOAD_COMMAND = "CHARGER";
+    public final static String QUIT_COMMAND = "QUITTER";
 
 
     @Override
