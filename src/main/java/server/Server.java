@@ -97,36 +97,38 @@ public class Server {
      * @return Une liste d'objets Course contenant les informations sur les cours pour la session spécifiée
      * @throws IOException En cas d'erreur lors de la lecture du fichier de cours
      */
-public void handleLoadCourses(String arg) {
-    try {
-        Scanner reader = new Scanner(new File("src/main/java/server/data/cours.txt"));
-        ArrayList<Course> courses = new ArrayList<>();
-        String line;
-        
-        while ((line = reader.readLine()) != null) {
-            String[] parts = line.split("\t");
-            String code = parts[0];
-            String name = parts[1];
-            String session = parts[2];
-            
-            if (session.equalsIgnoreCase(arg)) {
-                System.out.println("Course Added : " + parts[0]);
-                courses.add(new Course(name, code, session));
+
+
+    public void handleLoadCourses(String arg) {
+        try {
+            Scanner reader = new Scanner(new File("src/main/java/server/data/cours.txt"));
+            ArrayList<Course> courses = new ArrayList<>();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\t");
+                String code = parts[0];
+                String name = parts[1];
+                String session = parts[2];
+
+                if (session.equalsIgnoreCase(arg)) {
+                    System.out.println("Course Added : " + parts[0]);
+                    courses.add(new Course(name, code, session));
+                }
             }
+
+            reader.close();
+            objectOutputStream.writeObject(courses);
+            objectOutputStream.flush();
+            System.out.println(courses);
+        } catch (IOException e) {
+            System.out.println("Errorr");
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            System.out.println("Errorr");
+            e.printStackTrace();
         }
-        
-        reader.close();
-        objectOutputStream.writeObject(courses);
-        objectOutputStream.flush();
-        System.out.println(courses);
-    } catch (IOException e) {
-        System.out.println("Errorr");
-        e.printStackTrace();
-    } catch (FileNotFoundException e) {
-        System.out.println("Errorr");
-        e.printStackTrace();
     }
-}
 
 
     /**
@@ -137,27 +139,30 @@ public void handleLoadCourses(String arg) {
      * @return Un message de succès ou d'échec de l'inscription
      * @throws IOException En cas d'erreur lors de l'écriture du fichier d'inscription
      */
-     
-public void handleRegistration() {
-    try {
-        RegistrationForm registrationForm = (RegistrationForm) objectInputStream.readObject();
-        FileWriter fileWriter = new FileWriter("src/main/java/server/data/inscription.txt", true);
-        Course course = registrationForm.getCourse();
 
-        String formattedRegistration = String.format("%s\t%s\t%s\t%s\t%s\t%s%n",
-                registrationForm.getCourse().getSession(),
-                registrationForm.getCourse().getCode(),
-                registrationForm.getMatricule(),
-                registrationForm.getPrenom(),
-                registrationForm.getNom(),
-                registrationForm.getEmail());
 
-        Files.write(Paths.get("src/main/java/server/data/inscription.txt"), formattedRegistration.getBytes(), StandardOpenOption.APPEND);
+    public void handleRegistration() {
+        try {
+            RegistrationForm registrationForm = (RegistrationForm) objectInputStream.readObject();
+            FileWriter fileWriter = new FileWriter("src/main/java/server/data/inscription.txt", true);
+            Course course = registrationForm.getCourse();
 
-        objectOutputStream.writeObject("Inscription réussie.");
-    } catch (IOException | ClassNotFoundException e) {
-        e.printStackTrace();
+            String formattedRegistration = String.format("%s\t%s\t%s\t%s\t%s\t%s%n",
+                    registrationForm.getCourse().getSession(),
+                    registrationForm.getCourse().getCode(),
+                    registrationForm.getMatricule(),
+                    registrationForm.getPrenom(),
+                    registrationForm.getNom(),
+                    registrationForm.getEmail());
+
+            Files.write(Paths.get("src/main/java/server/data/inscription.txt"), formattedRegistration.getBytes(), StandardOpenOption.APPEND);
+
+            objectOutputStream.writeObject("Inscription réussie.");
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }
+
 
 
