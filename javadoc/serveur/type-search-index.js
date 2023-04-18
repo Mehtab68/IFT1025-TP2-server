@@ -1,0 +1,1 @@
+typeSearchIndex = [{"p":"<Unnamed>","l":"Client"},{"p":"server.models","l":"Course"},{"p":"server","l":"EventHandler"},{"p":"server.models","l":"RegistrationForm"},{"p":"server","l":"Server"},{"p":"server","l":"ServerLauncher"},{"l":"所有类和接口","u":"allclasses-index.html"}];updateSearchResults();
