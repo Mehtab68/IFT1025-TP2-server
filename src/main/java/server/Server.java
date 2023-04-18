@@ -137,7 +137,7 @@ public void handleLoadCourses(String arg) {
      * @return Un message de succès ou d'échec de l'inscription
      * @throws IOException En cas d'erreur lors de l'écriture du fichier d'inscription
      */
-     */
+     
 public void handleRegistration() {
     try {
         RegistrationForm registrationForm = (RegistrationForm) objectInputStream.readObject();
