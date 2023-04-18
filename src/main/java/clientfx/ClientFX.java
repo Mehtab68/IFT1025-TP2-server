@@ -16,6 +16,13 @@ public class ClientFX extends Application {
 
     private static int SERVER_PORT = 1337;
 
+    public final static String SUMMER_SEMESTER = "Ete";
+
+    public final static String FALL_SEMESTER = "Automne";
+
+    public final static String WINTER_SEMESTER = "Hiver";
+
+
 
     @Override
     public void start(Stage primaryStage) throws Exception {
