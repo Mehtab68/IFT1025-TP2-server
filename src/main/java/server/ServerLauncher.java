@@ -1,6 +1,8 @@
 package server;
 
 public class ServerLauncher {
+    public static final String SERVER_ADDRESS = "localhost";
+    public static final int SERVER_PORT = 1337;
     public final static int PORT = 1337;
 
     public static void main(String[] args) {
