@@ -20,6 +20,8 @@ import java.nio.file.StandardOpenOption;
 import java.io.FileReader;
 import java.io.BufferedReader;
 
+import java.util.function.BiConsumer;
+
 /**
  * La classe Server est responsable de la gestion des requêtes des clients
  * pour charger des cours et enregistrer des inscriptions.
@@ -35,10 +37,19 @@ public class Server {
     private ObjectOutputStream objectOutputStream;
     private final ArrayList<EventHandler> handlers;
 
+    interface EventHandler {
+        void handle(String cmd, String arg);
+    }
+
     public Server(int port) throws IOException {
         this.server = new ServerSocket(port, 1);
         this.handlers = new ArrayList<EventHandler>();
-        this.addEventHandler(this::handleEvents);
+        this.addEventHandler(new EventHandler() {
+            @Override
+            public void handle(String cmd, String arg) {
+                handleEvents(cmd, arg);
+            }
+        });
     }
 
     public void addEventHandler(EventHandler h) {
@@ -68,23 +79,21 @@ public class Server {
     }
 
     public void listen() throws IOException, ClassNotFoundException {
-    String line;
-    if ((line = this.objectInputStream.readObject().toString()) != null) {
-        Map.Entry<String, String> parts = processCommandLine(line);
-        String cmd = parts.getKey();
-        String arg = parts.getValue();
-        this.alertHandlers(cmd, arg);
+        String line;
+        if ((line = this.objectInputStream.readObject().toString()) != null) {
+            Map.Entry<String, String> parts = processCommandLine(line);
+            String cmd = parts.getKey();
+            String arg = parts.getValue();
+            this.alertHandlers(cmd, arg);
         }
     }
 
-
     public AbstractMap.SimpleEntry<String, String> processCommandLine(String line) {
-       String[] parts = line.split(" ");
-       String cmd = parts[0];
-       String args = String.join(" ", Arrays.asList(parts).subList(1, parts.length));
-       return new AbstractMap.SimpleEntry<>(cmd, args);
+        String[] parts = line.split(" ");
+        String cmd = parts[0];
+        String args = String.join(" ", Arrays.asList(parts).subList(1, parts.length));
+        return new AbstractMap.SimpleEntry<>(cmd, args);
     }
-
 
     public void disconnect() throws IOException {
         objectOutputStream.close();
@@ -92,61 +101,61 @@ public class Server {
         client.close();
     }
 
-    public void handleEvents(String cmd, String arg) {
-        if (cmd.equals(REGISTER_COMMAND)) {
+    private void handleEvents(String cmd, String arg) {
+        if (cmd.equalsIgnoreCase(REGISTER_COMMAND)) {
             handleRegistration();
-        } else if (cmd.equals(LOAD_COMMAND)) {
+        } else if (cmd.equalsIgnoreCase(LOAD_COMMAND)) {
             handleLoadCourses(arg);
+        } else {
+            System.out.println("Unknown command received: " + cmd);
         }
     }
 
-    /**
-     * Lire un fichier texte contenant des informations sur les cours et les transofmer en liste d'objets 'Course'.
-     * La méthode filtre les cours par la session spécifiée en argument.
-     * Ensuite, elle renvoie la liste des cours pour une session au client en utilisant l'objet 'objectOutputStream'.
-     * La méthode gère les exceptions si une erreur se produit lors de la lecture du fichier ou de l'écriture de l'objet dans le flux.
-     * @param session La session pour laquelle les cours doivent être chargés
-     * @return Une liste d'objets Course contenant les informations sur les cours pour la session spécifiée
-     * @throws IOException En cas d'erreur lors de la lecture du fichier de cours
-     */
+   /**
+    * Lire un fichier texte contenant des informations sur les cours et les transofmer en liste d'objets 'Course'.
+    * La méthode filtre les cours par la session spécifiée en argument.
+    * Ensuite, elle renvoie la liste des cours pour une session au client en utilisant l'objet 'objectOutputStream'.
+    * La méthode gère les exceptions si une erreur se produit lors de la lecture du fichier ou de l'écriture de l'objet dans le flux.
+    * @param session La session pour laquelle les cours doivent être chargés
+    * @return Une liste d'objets Course contenant les informations sur les cours pour la session spécifiée
+    * @throws IOException En cas d'erreur lors de la lecture du fichier de cours
+    */
 
+    
+    public void handleLoadCourses(String arg) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("src/main/java/server/data/cours.txt"))) {
+            ArrayList<Course> courses = new ArrayList<>();
+            String line;
 
-     public void handleLoadCourses(String arg) {
-         try (BufferedReader reader = new BufferedReader(new FileReader("src/main/java/server/data/cours.txt"))) {
-              ArrayList<Course> courses = new ArrayList<>();
-              String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\t");
+                String code = parts[0];
+                String name = parts[1];
+                String session = parts[2];
 
-              while ((line = reader.readLine()) != null) {
-                  String[] parts = line.split("\t");
-                  String code = parts[0];
-                  String name = parts[1];
-                  String session = parts[2];
+                if (session.equalsIgnoreCase(arg)) {
+                    System.out.println("Course Added : " + parts[0]);
+                    courses.add(new Course(name, code, session));
+                }
+            }
 
-                  if (session.equalsIgnoreCase(arg)) {
-                      System.out.println("Course Added : " + parts[0]);
-                      courses.add(new Course(name, code, session));
-                  }
-              }
+            objectOutputStream.writeObject(courses);
+            objectOutputStream.flush();
+            System.out.println(courses);
+        } catch (IOException e) {
+            System.out.println("Error");
+            e.printStackTrace();
+        }
+    }
 
-              objectOutputStream.writeObject(courses);
-              objectOutputStream.flush();
-              System.out.println(courses);
-          } catch (IOException e) {
-              System.out.println("Errorr");
-              e.printStackTrace();
-          }
-      }
-
-
-
-    /**
-     * Récupérer l'objet 'RegistrationForm' envoyé par le client en utilisant 'objectInputStream', l'enregistrer dans un fichier texte
-     * et renvoyer un message de confirmation au client.
-     * La méthode gére les exceptions si une erreur se produit lors de la lecture de l'objet, l'écriture dans un fichier ou dans le flux de sortie.
-     * @param registrationForm Un objet RegistrationForm contenant les informations d'inscription de l'étudiant
-     * @return Un message de succès ou d'échec de l'inscription
-     * @throws IOException En cas d'erreur lors de l'écriture du fichier d'inscription
-     */
+  /**
+   * Récupérer l'objet 'RegistrationForm' envoyé par le client en utilisant 'objectInputStream', l'enregistrer dans un fichier texte
+   * et renvoyer un message de confirmation au client.
+   * La méthode gére les exceptions si une erreur se produit lors de la lecture de l'objet, l'écriture dans un fichier ou dans le flux de sortie.
+   * @param registrationForm Un objet RegistrationForm contenant les informations d'inscription de l'étudiant
+   * @return Un message de succès ou d'échec de l'inscription
+   * @throws IOException En cas d'erreur lors de l'écriture du fichier d'inscription
+   */
 
 
     public void handleRegistration() {
